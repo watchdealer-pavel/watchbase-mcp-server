@@ -178,4 +178,6 @@ Once configured, you can invoke the server's tools from your AI assistant using 
 
 ## License
 
-This project is intended for personal use. Please refer to WatchBase terms of service regarding API usage.
+This MCP server project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Please also refer to WatchBase terms of service regarding API usage.
