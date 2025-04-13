@@ -1,0 +1,33 @@
+{
+  "name": "watchbase-mcp",
+  "version": "0.1.0",
+  "description": "Structured and standardized querying of watch-related metadata such as brands families and reference details from WatchBase.com",
+  "main": "build/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "watch": "tsc --watch",
+    "start": "node build/index.js",
+    "dev": "npm run watch & nodemon build/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "watchbase-mcp": "build/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "watchbase",
+    "watches"
+  ],
+  "author": "Cline",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.9.0",
+    "axios": "^1.8.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "nodemon": "^3.0.3",
+    "typescript": "^5.3.3"
+  }
+}
