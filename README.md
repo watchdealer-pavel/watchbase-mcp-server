@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/watchdealer-pavel-watchbase-mcp-server-badge.png)](https://mseep.ai/app/watchdealer-pavel-watchbase-mcp-server)
+
 # WatchBase MCP Server
 
 An MCP (Model Context Protocol) server providing access to the WatchBase Data Feed API for querying watch metadata.
