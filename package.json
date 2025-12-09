@@ -1,33 +1,52 @@
 {
-  "name": "watchbase-mcp",
-  "version": "0.1.0",
-  "description": "Structured and standardized querying of watch-related metadata such as brands families and reference details from WatchBase.com",
+  "name": "watchbase-mcp-server",
+  "version": "0.2.0",
+  "description": "MCP server for WatchBase.com API - query watch brands, families, reference numbers, and detailed specifications",
   "main": "build/index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "build": "tsc && chmod +x build/index.js",
     "watch": "tsc --watch",
     "start": "node build/index.js",
     "dev": "npm run watch & nodemon build/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepare": "npm run build"
   },
   "bin": {
-    "watchbase-mcp": "build/index.js"
+    "watchbase-mcp-server": "build/index.js"
   },
+  "files": [
+    "build",
+    "watchbase_api_reference.md"
+  ],
   "keywords": [
     "mcp",
+    "model-context-protocol",
     "watchbase",
-    "watches"
+    "watches",
+    "luxury-watches",
+    "watch-database",
+    "api-client"
   ],
-  "author": "Cline",
-  "license": "ISC",
+  "author": "watchdealer-pavel",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/watchdealer-pavel/watchbase-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/watchdealer-pavel/watchbase-mcp-server/issues"
+  },
+  "homepage": "https://github.com/watchdealer-pavel/watchbase-mcp-server#readme",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.9.0",
-    "axios": "^1.8.4"
+    "@modelcontextprotocol/sdk": "^1.24.3",
+    "axios": "^1.13.2"
   },
   "devDependencies": {
-    "@types/node": "^20.11.19",
-    "nodemon": "^3.0.3",
-    "typescript": "^5.3.3"
+    "@types/node": "^22.10.1",
+    "nodemon": "^3.1.11",
+    "typescript": "^5.7.2"
   }
 }

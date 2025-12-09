@@ -1,183 +1,210 @@
 # WatchBase MCP Server
 
-An MCP (Model Context Protocol) server providing access to the WatchBase Data Feed API for querying watch metadata.
+[![Node.js 18+](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## About WatchBase API
+An MCP (Model Context Protocol) server providing access to the [WatchBase Data Feed API](https://watchbase.com/data-feed) for querying comprehensive watch metadata.
 
-The WatchBase Data Feed API provides structured access to a comprehensive database of watch information, including brands, families (collections), specific watch models, reference numbers, technical details, and images. It allows developers to integrate detailed watch data into their applications. More information can be found on the [WatchBase API Documentation](https://api.watchbase.com/docs).
+## What is WatchBase?
+
+[WatchBase](https://watchbase.com) is a comprehensive watch database containing detailed information about luxury watches, including:
+- **280+ brands** (Rolex, Patek Philippe, Audemars Piguet, etc.)
+- **Thousands of watch families/collections**
+- **Technical specifications** (case size, movement, complications, etc.)
+- **Reference numbers** for precise identification
 
 ## Features
 
-This MCP server exposes the following tools corresponding to the WatchBase API endpoints:
+This MCP server provides 6 tools for querying the WatchBase API:
 
-*   **`search`**: Search the database by brand name, family name, watch name, and reference number (matches whole words).
-*   **`search_refnr`**: Search the database by reference number (allows partial matches).
-*   **`list_brands`**: Retrieve a list of all watch brands in the database.
-*   **`list_families`**: Retrieve a list of all families (collections) for a given brand ID.
-*   **`list_watches`**: Retrieve a list of watches for a particular Brand ID and optionally Family ID. Can be filtered by update date.
-*   **`get_watch_details`**: Retrieve the full details (all data fields) for a particular watch by its WatchBase ID.
+| Tool | Description | Required Params |
+|------|-------------|-----------------|
+| `search` | Search by brand, family, watch name, or reference number (whole words) | `q` |
+| `search_refnr` | Search by reference number (partial matches allowed) | `q` |
+| `list_brands` | Get all watch brands in the database | — |
+| `list_families` | Get all families/collections for a brand | `brand_id` |
+| `list_watches` | Get watches for a brand/family (with optional date filter) | `brand_id` |
+| `get_watch_details` | Get full specifications for a specific watch | `id` |
 
 ## Prerequisites
 
-*   **Node.js and npm:** Required to install dependencies and run the server.
-*   **WatchBase API Key:** You need an API key from WatchBase. Visit the [WatchBase API page](https://api.watchbase.com/) to request access and obtain a key.
+- **Node.js 18+** (including Node.js 25)
+- **WatchBase API Key** — [Request access here](https://watchbase.com/data-feed)
 
-## Installation
+## Quick Start
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/watchdealer-pavel/watchbase-mcp.git
-    cd watchbase-mcp
-    ```
+### 1. Clone and Install
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
+```bash
+git clone https://github.com/watchdealer-pavel/watchbase-mcp-server.git
+cd watchbase-mcp-server
+npm install
+```
 
-3.  **Build the server:**
-    ```bash
-    npm run build
-    ```
-    This command compiles the TypeScript source code into JavaScript, placing the output in the `build/` directory (specifically `build/index.js`).
+### 2. Configure Your MCP Client
 
-## Configuration
+Add to your MCP client configuration:
 
-The server requires your WatchBase API key to be provided via the `WATCHBASE_API_KEY` environment variable. You need to configure your MCP client (like Cline/Roo Code or the Claude Desktop App) to run this server and pass the environment variable.
+**Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
 
-**Example Configuration:**
-
-Below are examples for common MCP clients. **Remember to replace `/path/to/your/watchbase-mcp/build/index.js` with the actual absolute path to the compiled server file on your system, and `YOUR_WATCHBASE_API_KEY` with your real WatchBase API key.**
-
-### Cline / Roo Code (VS Code Extension)
-
-1.  Open your VS Code settings for MCP servers. On macOS, this is typically located at:
-    `~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`
-    *(Note: The exact path might vary based on your operating system and VS Code installation type. For Roo Code, replace `saoudrizwan.claude-dev` with `rooveterinaryinc.roo-cline`)*
-
-2.  Add the following configuration block under the `mcpServers` key:
-
-    ```json
-    "watchbase-mcp": {
+```json
+{
+  "mcpServers": {
+    "watchbase": {
       "command": "node",
-      "args": ["/path/to/your/watchbase-mcp/build/index.js"], // <-- IMPORTANT: Replace with the ACTUAL absolute path to build/index.js
+      "args": ["/path/to/watchbase-mcp-server/build/index.js"],
       "env": {
-        "WATCHBASE_API_KEY": "YOUR_WATCHBASE_API_KEY" // <-- IMPORTANT: Replace with your WatchBase API Key
-      },
-      "disabled": false,
-      "autoApprove": [] // Or add specific tools you want to auto-approve
+        "WATCHBASE_API_KEY": "your-api-key-here"
+      }
     }
-    ```
+  }
+}
+```
 
-### Claude Desktop App
+**Claude Code** (`.mcp.json` in your project):
 
-1.  Open the Claude Desktop App configuration file. On macOS, this is typically located at:
-    `~/Library/Application Support/Claude/claude_desktop_config.json`
-    *(Note: The exact path might vary based on your operating system.)*
-
-2.  Add the following configuration block under the `mcpServers` key:
-
-    ```json
-    "watchbase-mcp": {
+```json
+{
+  "mcpServers": {
+    "watchbase": {
       "command": "node",
-      "args": ["/path/to/your/watchbase-mcp/build/index.js"], // <-- IMPORTANT: Replace with the ACTUAL absolute path to build/index.js
+      "args": ["/path/to/watchbase-mcp-server/build/index.js"],
       "env": {
-        "WATCHBASE_API_KEY": "YOUR_WATCHBASE_API_KEY" // <-- IMPORTANT: Replace with your WatchBase API Key
-      },
-      "disabled": false,
-      "autoApprove": [] // Or add specific tools you want to auto-approve
+        "WATCHBASE_API_KEY": "your-api-key-here"
+      }
     }
-    ```
-
-## Usage
-
-Once configured, you can invoke the server's tools from your AI assistant using the `use_mcp_tool` command/tool.
-
-### `search` Example
-
-```xml
-<use_mcp_tool>
-  <server_name>watchbase-mcp</server_name>
-  <tool_name>search</tool_name>
-  <arguments>
-    {
-      "q": "priors court"
-    }
-  </arguments>
-</use_mcp_tool>
+  }
+}
 ```
 
-### `search_refnr` Example
+### 3. Restart Your MCP Client
 
-```xml
-<use_mcp_tool>
-  <server_name>watchbase-mcp</server_name>
-  <tool_name>search_refnr</tool_name>
-  <arguments>
-    {
-      "q": "P2/"
-    }
-  </arguments>
-</use_mcp_tool>
+Restart Claude Desktop or Claude Code to load the new MCP server.
+
+## Usage Examples
+
+### Search for a Watch
+
+```
+Search for "Royal Oak" watches
+→ Uses: search tool with q="Royal Oak"
 ```
 
-### `list_brands` Example
+### Search by Reference Number
 
-```xml
-<use_mcp_tool>
-  <server_name>watchbase-mcp</server_name>
-  <tool_name>list_brands</tool_name>
-  <arguments>
-    {}
-  </arguments>
-</use_mcp_tool>
+```
+Find watches with reference number starting with "15500"
+→ Uses: search_refnr tool with q="15500"
 ```
 
-### `list_families` Example
+### Browse Brands and Families
 
-```xml
-<use_mcp_tool>
-  <server_name>watchbase-mcp</server_name>
-  <tool_name>list_families</tool_name>
-  <arguments>
-    {
-      "brand_id": 37
-    }
-  </arguments>
-</use_mcp_tool>
+```
+List all Rolex families
+→ Uses: list_brands to find Rolex ID, then list_families with brand_id
 ```
 
-### `list_watches` Example
+### Get Watch Specifications
 
-```xml
-<use_mcp_tool>
-  <server_name>watchbase-mcp</server_name>
-  <tool_name>list_watches</tool_name>
-  <arguments>
-    {
-      "brand_id": 37,
-      "family_id": 279
-    }
-  </arguments>
-</use_mcp_tool>
+```
+Get full details for watch ID 12345
+→ Uses: get_watch_details tool with id=12345
 ```
 
-### `get_watch_details` Example
+## API Response Examples
 
-```xml
-<use_mcp_tool>
-  <server_name>watchbase-mcp</server_name>
-  <tool_name>get_watch_details</tool_name>
-  <arguments>
-    {
-      "id": 17289
-    }
-  </arguments>
-</use_mcp_tool>
+### Brand Object
+```json
+{
+  "id": 59,
+  "name": "Audemars Piguet"
+}
 ```
+
+### Watch List Response
+```json
+{
+  "id": 11702,
+  "refnr": "15500ST.OO.1220ST.01",
+  "name": "Royal Oak",
+  "brand": { "id": 59, "name": "Audemars Piguet" },
+  "family": { "id": 234, "name": "Royal Oak" },
+  "thumb": "https://cdn.watchbase.com/watch/medium/...",
+  "updated": "2024-01-15"
+}
+```
+
+### Watch Details Response
+Includes all fields plus:
+- `caliber` — Movement details
+- `case` — Case specifications
+- `dial` — Dial information
+- `added`, `modified`, `published` — Metadata dates
+
+## For Watch Dealers
+
+This MCP server is perfect for:
+
+1. **Inventory Management** — Look up reference numbers and specifications
+2. **Price Research** — Get detailed specs to compare with market prices
+3. **Authentication** — Verify reference numbers and specifications
+4. **Content Creation** — Generate accurate watch descriptions
+5. **Customer Service** — Quickly answer questions about any watch
+
+### Typical Workflow
+
+1. **Search by reference number** — `search_refnr` with partial ref
+2. **Get watch ID** from search results
+3. **Fetch full details** — `get_watch_details` with ID
+4. **Use specifications** for listings, comparisons, or research
+
+### Incremental Sync for Large Inventories
+
+Use `list_watches` with `updated_since` parameter to sync only changed records:
+
+```
+list_watches with brand_id=59, updated_since="2024-01-01"
+→ Returns only watches updated after Jan 1, 2024
+```
+
+## API Documentation
+
+See [watchbase_api_reference.md](./watchbase_api_reference.md) for detailed API documentation.
+
+## Development
+
+```bash
+# Watch mode (auto-rebuild on changes)
+npm run dev
+
+# Manual build
+npm run build
+
+# Run the server directly
+npm start
+```
+
+## Troubleshooting
+
+### "WATCHBASE_API_KEY environment variable is required"
+Make sure you've added the `WATCHBASE_API_KEY` to your MCP client's `env` configuration.
+
+### "WatchBase API error: Invalid or unauthorized API key"
+Your API key may be invalid or expired. Contact WatchBase support.
+
+### Server not appearing in Claude
+1. Check the path to `build/index.js` is correct
+2. Restart Claude Desktop/Code
+3. Check logs for connection errors
 
 ## License
 
-This MCP server project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License — see [LICENSE](LICENSE) file.
 
-Please also refer to WatchBase terms of service regarding API usage.
+**Note:** This MCP server is an independent project. Please refer to [WatchBase Terms of Service](https://watchbase.com/terms) for API usage policies.
+
+## Links
+
+- [WatchBase Data Feed](https://watchbase.com/data-feed) — API access and pricing
+- [WatchBase Website](https://watchbase.com) — Browse the watch database
+- [Model Context Protocol](https://modelcontextprotocol.io) — MCP documentation

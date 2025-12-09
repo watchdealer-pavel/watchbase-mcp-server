@@ -58,14 +58,11 @@ class WatchBaseServer {
   constructor() {
     this.server = new Server(
       {
-        name: 'watchbase-mcp',
-        version: '0.1.0',
-        description:
-          'Structured and standardized querying of watch-related metadata such as brands families and reference details from WatchBase.com',
+        name: 'watchbase-mcp-server',
+        version: '0.2.0',
       },
       {
         capabilities: {
-          resources: {}, // No resources defined for this server
           tools: {},
         },
       }
